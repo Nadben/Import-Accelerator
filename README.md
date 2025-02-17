@@ -1,7 +1,8 @@
-# Generic ETL Pipeline
+# Import Accelerator (WIP)
 
 ## Overview
-An unambition import-accelerator designed to facilitate the extraction, transformation, and loading (ETL) of data into a structured database. The import-accelerator implements a simple CDC using Object hashing. 
+An unambition import-accelerator designed to facilitate the extraction, transformation, and loading (ETL) of data into a structured database. The import-accelerator implements a simple CDC using Object hashing.
+The goal of this project is to provide a small framework that you can use to import data from a text or CSV file to Commercetools. 
 
 This project is built with Dotnet, Mapster and entity framework core. 
 
@@ -51,15 +52,21 @@ Architecture Diagram
        }
    }
    ```
-4. Run database migrations using the power shell scripts
 
 ## Usage
-To start the ETL process, run the application:
+To start the ETL process
+
+Drop the files in their respective Data folder (Import-Accelerator/Data/...)
+the source generators will read the headers and the first line of every file and will generate all the necessary models.
+Run database migrations using the power shell scripts (just add the name of the migration for the landing and staging DB).
+Write Custom mapping code for mapping between the landing models and staging models.
+run the application:
+
 ```sh
 dotnet run
 ```
 
 The pipeline will:
 1. Detect all entity types dynamically.
-2. Register necessary services and consumers.
-3. Execute workflows to process and load data.
+3. Register necessary services and consumers.
+4. Execute workflows to process and load data.
