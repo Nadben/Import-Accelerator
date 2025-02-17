@@ -27,7 +27,6 @@ The pipeline consists of the following main components:
 Architecture Diagram
 ![image](https://github.com/user-attachments/assets/76af1338-0aed-4761-a3b3-4a71e9f61919)
 
-
 ## Prerequisites
 - .NET 9 or later
 - Entity Framework Core
@@ -37,8 +36,7 @@ Architecture Diagram
 ## Installation
 1. Clone the repository:
    ```sh
-   git clone https://github.com/your-repo/GenericETLPipeline.git
-   cd GenericETLPipeline
+   git clone https://github.com/Nadben/Import-Accelerator.git
    ```
 2. Install dependencies:
    ```sh
@@ -47,24 +45,25 @@ Architecture Diagram
 3. Configure the database connection in `appsettings.json`:
    ```json
    {
-       "ConnectionStrings": {
-           "DefaultConnection": "YourDatabaseConnectionString"
-       }
+        "AcceleratorConfiguration": {
+          "SourceDirectory": "C:\\...\\Import-Accelerator\\Data",
+          "PostgresConnectionString": ""
+     }
    }
    ```
 
 ## Usage
 To start the ETL process
 
-Drop the files in their respective Data folder (Import-Accelerator/Data/...)
-the source generators will read the headers and the first line of every file and will generate all the necessary models.
-Run database migrations using the power shell scripts (just add the name of the migration for the landing and staging DB).
-Write Custom mapping code for mapping between the landing models and staging models.
-run the application:
-
-```sh
-dotnet run
-```
+- Drop the files in their respective Data folder (Import-Accelerator/Data/...)
+- the source generators will read the headers and the first line of every file and will generate all the necessary models.
+- Run database migrations using the power shell scripts (just add the name of the migration for the landing and staging DB).
+- Write Custom mapping code for mapping between the landing models and staging models.
+- run the application:
+   
+   ```sh
+   dotnet run
+   ```
 
 The pipeline will:
 1. Detect all entity types dynamically.
