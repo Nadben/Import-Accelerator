@@ -1,0 +1,71 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <TargetFramework>net9.0</TargetFramework>
+        <RootNamespace>Accelerator.Shared.Infrastructure</RootNamespace>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <EmitCompilerGeneratedFiles>true</EmitCompilerGeneratedFiles>
+        <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+        <AppendRuntimeIdentifierToOutputPath>false</AppendRuntimeIdentifierToOutputPath>
+        <CompilerGeneratedFilesOutputPath>$(MSBuildProjectDirectory)\GeneratedFiles</CompilerGeneratedFilesOutputPath>
+    </PropertyGroup>
+
+    <Target Name="PrintCompilerGeneratedFilesPath" BeforeTargets="BeforeBuild">
+        <Message Text="CompilerGeneratedFilesOutputPath: $(CompilerGeneratedFilesOutputPath)" Importance="high"/>
+    </Target>
+
+    <ItemGroup>
+        <Content Include="..\.dockerignore">
+            <Link>.dockerignore</Link>
+        </Content>
+
+        <ProjectReference Include="..\Accelerator.Schema.Generator\Accelerator.Schema.Generator.csproj"
+                          OutputItemType="Analyzer"
+                          ReferenceOutputAssembly="false"/>
+        <Compile Remove="$(CompilerGeneratedFilesOutputPath)/**/*.cs"/>
+        <Compile Remove="GeneratedFiles\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.json" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.csv" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.xml" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.txt" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.json" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.csv" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.xml" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.txt" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.json" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.csv" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.xml" />
+        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.txt" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="commercetools.Sdk.Api" Version="11.9.0" />
+        <PackageReference Include="commercetools.Sdk.ImportApi" Version="11.9.0" />
+        <PackageReference Include="Mapster" Version="7.4.0" />
+        <PackageReference Include="Mapster.DependencyInjection" Version="1.0.1" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.8" />
+        <PackageReference Include="Microsoft.CodeAnalysis.CSharp.Workspaces" Version="4.10.0" />
+        <PackageReference Include="Microsoft.CodeAnalysis.Workspaces.MSBuild" Version="4.10.0" />
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.8">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="9.0.0" />
+        <PackageReference Include="MySql.EntityFrameworkCore" Version="8.0.8" />
+        <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.8" />
+        <PackageReference Include="System.Text.Json" Version="9.0.0" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <EmbeddedResource Remove="GeneratedFiles\**" />
+    </ItemGroup>
+
+    <ItemGroup>
+      <None Remove="GeneratedFiles\**" />
+    </ItemGroup>
+</Project>

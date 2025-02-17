@@ -1,0 +1,6 @@
+﻿services:
+  import-accelerator:
+    image: import-accelerator
+    build:
+      context: .
+      dockerfile: Import-Accelerator/Dockerfile
