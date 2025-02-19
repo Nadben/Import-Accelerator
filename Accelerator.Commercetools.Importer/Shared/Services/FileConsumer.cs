@@ -24,7 +24,7 @@ public class FileConsumer<T> : IFileConsumer<T>
     private readonly FileProcessingChannel<FileData> _channelFileBuffer;
     private readonly DataBaseProcessingChannel<T> _dataBaseProcessingChannel;
     private readonly ILogger<FileConsumer<T>> _logger;
-    private readonly IOptions<Configuration> _fileConfiguration;
+    private readonly IOptions<AcceleratorConfiguration> _fileConfiguration;
 
     private static string FetchSeparatorFromExtension(string pathExtension) => pathExtension switch
     {
@@ -36,7 +36,7 @@ public class FileConsumer<T> : IFileConsumer<T>
 
 
     public FileConsumer(ILogger<FileConsumer<T>> logger,
-        IOptions<Configuration> fileConfiguration,
+        IOptions<AcceleratorConfiguration> fileConfiguration,
         FileProcessingChannel<FileData> channelFileBuffer,
         DataBaseProcessingChannel<T> dataBaseProcessingChannel)
     {

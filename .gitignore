@@ -5,3 +5,4 @@ riderModule.iml
 /_ReSharper.Caches/
 .vs
 Accelerator.Shared.Infrastructure/GeneratedFiles/*
+Accelerator.Commercetools.Importer/appsettings.json

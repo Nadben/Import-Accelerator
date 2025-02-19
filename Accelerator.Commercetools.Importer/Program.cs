@@ -8,6 +8,7 @@ using Accelerator.Commercetools.Importer.Shared.Interfaces;
 using Accelerator.Commercetools.Importer.Shared.Services;
 using Accelerator.Commercetools.Importer.Workflow;
 using Accelerator.Shared.Infrastructure;
+using commercetools.Sdk.Api;
 using Mapster;
 using MapsterMapper;
 using Microsoft.Extensions.Configuration;
@@ -22,11 +23,15 @@ var configurationBuilder = new ConfigurationBuilder()
         .AddEnvironmentVariables();
 
 IConfiguration configuration = configurationBuilder.Build();
-var opts = new Configuration();
+var opts = new AcceleratorConfiguration();
 var config = configuration.GetSection("AcceleratorConfiguration");
 config.Bind(opts, o => o.BindNonPublicProperties = true);
 
-builder.Services.Configure<Configuration>(config);
+// commercetools config
+builder.Services.UseCommercetoolsApi(configuration, "AcceleratorConfiguration:CommercetoolsConfig");
+builder.Services.AddLogging();
+
+builder.Services.Configure<AcceleratorConfiguration>(config);
 builder.Services.AddInfrastructure(opts);
 builder.Services.AddScoped(typeof(FileProcessingChannel<>));
 builder.Services.AddScoped(typeof(DataBaseProcessingChannel<>));
