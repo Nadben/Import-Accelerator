@@ -33,6 +33,7 @@ builder.Services.AddLogging();
 
 builder.Services.Configure<AcceleratorConfiguration>(config);
 builder.Services.AddInfrastructure(opts);
+
 builder.Services.AddScoped(typeof(FileProcessingChannel<>));
 builder.Services.AddScoped(typeof(DataBaseProcessingChannel<>));
 builder.Services.AddScoped(typeof(BlockingCollection<>));
