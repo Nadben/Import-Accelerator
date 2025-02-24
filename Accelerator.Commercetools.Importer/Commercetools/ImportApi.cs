@@ -1,4 +1,5 @@
 ﻿using commercetools.Sdk.ImportApi.Client;
+using commercetools.Sdk.ImportApi.Models.Common;
 using commercetools.Sdk.ImportApi.Models.Importrequests;
 
 namespace Accelerator.Commercetools.Importer.Commercetools;
@@ -23,42 +24,45 @@ public class ImportApi : IImportApi
 
     public async Task BatchInsertCategories(IList<ICategoryImportRequest> categories, string container)
     {
+        var number = 0;
         foreach (var categoryImportRequest in categories.Chunk(MaximumBatchLenght))
         {
+            var containerName = $"{container}-{number}";
             var tasks = categoryImportRequest
                 .Select(i =>
-                    Client.Categories()
+                    Client
+                        .EnsureContainerIsCreated(containerName, IImportResourceType.Category)
+                        .Result
+                        .Categories()
                         .ImportContainers()
-                        .WithImportContainerKeyValue(container)
+                        .WithImportContainerKeyValue(containerName)
                         .Post(i)
                         .ExecuteAsync()
                 );
-            
+
+            number++;
             await Task.WhenAll(tasks);
         }
     }
 
     public async Task BatchInsertPrice(IList<IPriceImportRequest> prices, string container)
     {
-        
+        var number = 0;
         foreach (var priceImportRequest in prices.Chunk(MaximumBatchLenght))
         {
+            var containerName = $"{container}-{number}";
             var tasks = priceImportRequest.Select(i =>
-                Client.Prices()
+                Client.EnsureContainerIsCreated(containerName, IImportResourceType.Price)
+                    .Result
+                    .Prices()
                     .ImportContainers()
                     .WithImportContainerKeyValue(container)
                     .Post(i)
                     .ExecuteAsync()
             );
-
+            
+            number++;
             await Task.WhenAll(tasks);
         }
     }
-}
-
-public interface IImportApi
-{
-    Task BatchInsert<T>(IList<T> importEntities, string container);
-    Task BatchInsertCategories(IList<ICategoryImportRequest> categories, string container);
-    Task BatchInsertPrice(IList<IPriceImportRequest> prices, string container);
 }

@@ -101,8 +101,5 @@ builder.Services.AddSingleton(mapsterConfig);
 builder.Services.AddScoped<IMapper, ServiceMapper>();
 // TypeAdapterConfig.GlobalSettings.Scan(Assembly.GetEntryAssembly());
 
-
-
 using IHost host = builder.Build();
 host.Run();
-
