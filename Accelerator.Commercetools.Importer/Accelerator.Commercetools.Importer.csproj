@@ -13,6 +13,7 @@
       <PackageReference Include="commercetools.Sdk.HistoryApi" Version="12.6.0" />
       <PackageReference Include="commercetools.Sdk.ImportApi" Version="12.6.0" />
       <PackageReference Include="commercetools.Sdk.MLApi" Version="11.4.0" />
+      <PackageReference Include="Microsoft.Extensions.Http.Resilience" Version="9.2.0" />
       <PackageReference Include="PostgreSQLCopyHelper" Version="2.8.0" />
       <PackageReference Include="System.Text.Json" Version="9.0.0" />
     </ItemGroup>

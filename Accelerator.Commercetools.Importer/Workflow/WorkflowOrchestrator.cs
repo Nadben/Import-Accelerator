@@ -1,4 +1,5 @@
 ﻿using Accelerator.Commercetools.Importer.GenericEtlPipeline;
+using Accelerator.Commercetools.Importer.Shared;
 using Accelerator.Shared.Infrastructure.Infrastructure;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -73,13 +74,18 @@ public class WorkflowOrchestrator : BackgroundService
                 ["Price", "Category"])
             .RegisterGroup("Staging", type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
                 allTypes,
+                ["Price", "Category"])
+            .RegisterGroup("Loading", 
+                _ => true,
+                allTypes,
                 ["Price", "Category"]);
         
         var workerGroups = typeGroupDictionary.Categories
             .Select(category => WorkerGroup.Create(
                 category,
-                createLandingWorker: (landing, _) => typeof(LandingWorker<,>).MakeGenericType(landing.Type, typeof(LandingImportContext)),
-                createStagingWorker: (landing, staging) => typeof(StagingWorker<,,,>).MakeGenericType(landing.Type, typeof(LandingImportContext), staging.Type, typeof(StagingImportContext)),
+                (landing, _) => typeof(LandingWorker<,>).MakeGenericType(landing.Type, typeof(LandingImportContext)),
+                (landing, staging) => typeof(StagingWorker<,,,>).MakeGenericType(landing.Type, typeof(LandingImportContext), staging.Type, typeof(StagingImportContext)),
+                (_, staging) => LoadingWorkerFactory.CreateGenericLoadingWorker(staging),
                 landingTypes: typeGroupDictionary.GetTypes("Landing", category),
                 stagingTypes: typeGroupDictionary.GetTypes("Staging", category)
             ))

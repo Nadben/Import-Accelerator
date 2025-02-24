@@ -4,6 +4,8 @@ using Accelerator.Commercetools.Importer.Shared.Extension;
 using Accelerator.Shared.Infrastructure.Entities.Staging;
 using commercetools.Sdk.Api.Models.Channels;
 using commercetools.Sdk.Api.Models.StandalonePrices;
+using commercetools.Sdk.ImportApi.Models.Categories;
+using commercetools.Sdk.ImportApi.Models.StandalonePrices;
 using Mapster;
 using IMoneyType = commercetools.Sdk.ImportApi.Models.Common.IMoneyType;
 using TypedMoney = commercetools.Sdk.ImportApi.Models.Common.TypedMoney;
@@ -32,19 +34,18 @@ public class CommercetoolsMapper : IRegister
         //     .Map(i => i.Hash, j => j.GetObjectHashCode())
         //     .Map(i => i.Channel, j => $"prices-pw-{j.Regionid}");
         //
-        // config.NewConfig<CommercetoolsStandalonePriceImport, StandalonePrice>()
-        //     .Map(i => i.Sku, j => j.Sku)
-        //     .Map(i => i.Value, j => new TypedMoney
-        //     {
-        //         Type = IMoneyType.CentPrecision,
-        //         FractionDigits = 2,
-        //         CentAmount = long.Parse(j.Value),
-        //         CurrencyCode = "CAD"
-        //     })
-        //     .Map(i => i.Channel, j => new ChannelReference
-        //     {
-        //         Id = j.Channel
-        //     })
-        //     .Map(i => i.CreatedAt, j => j.CreatedAt);
+        config.NewConfig<CommercetoolsStandalonePriceImport, StandalonePriceImport>()
+            .Map(i => i.Sku, j => j.Sku)
+            .Map(i => i.Value, j => new TypedMoney
+            {
+                Type = IMoneyType.CentPrecision,
+                FractionDigits = 2,
+                CentAmount = long.Parse(j.Value),
+                CurrencyCode = "CAD"
+            })
+            .Map(i => i.Channel, j => new ChannelReference
+            {
+                Id = j.Channel
+            });
     }
 }

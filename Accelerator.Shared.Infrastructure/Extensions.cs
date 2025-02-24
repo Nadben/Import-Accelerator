@@ -21,7 +21,8 @@ public static class Extensions
         
         services.AddDbContext<LandingImportContext>(opts =>
             {
-                opts.UseNpgsql(acceleratorConfiguration.PostgresConnectionString)
+                opts.UseNpgsql(acceleratorConfiguration.PostgresConnectionString,
+                        opt => opt.EnableRetryOnFailure())
                     .EnableSensitiveDataLogging()
                     .UseLoggerFactory(ContextLoggerFactory);
             }
@@ -29,7 +30,8 @@ public static class Extensions
         
         services.AddDbContext<StagingImportContext>(opts =>
         {
-            opts.UseNpgsql(acceleratorConfiguration.PostgresConnectionString)
+            opts.UseNpgsql(acceleratorConfiguration.PostgresConnectionString,
+                    opt => opt.EnableRetryOnFailure())
                 .EnableSensitiveDataLogging()
                 .UseLoggerFactory(ContextLoggerFactory);
         });

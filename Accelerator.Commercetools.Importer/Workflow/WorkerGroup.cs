@@ -14,6 +14,7 @@ public class WorkerGroup
     public static WorkerGroup Create(string category,
         Func<GroupedType, GroupedType, Type> createLandingWorker,
         Func<GroupedType, GroupedType, Type> createStagingWorker,
+        Func<GroupedType, GroupedType, Type> createLoadingWorker,
         IEnumerable<GroupedType> landingTypes,
         IEnumerable<GroupedType> stagingTypes)
     {
@@ -25,6 +26,7 @@ public class WorkerGroup
             {
                 workerTypes.Add(createLandingWorker(landingType, stagingType));
                 workerTypes.Add(createStagingWorker(landingType, stagingType));
+                workerTypes.Add(createLoadingWorker(landingType, stagingType));
             }
         }
 

@@ -51,11 +51,19 @@ public class DataBaseService<T, TContext> : IDataBaseService<T, TContext>
     {
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         context.ChangeTracker.AutoDetectChangesEnabled = false;
-        
+
         try
         {
             await context.Set<T>().AddRangeAsync(entitiesToInsert);
-            await context.SaveChangesAsync();
+            await context.Database
+                .CreateExecutionStrategy()
+                .ExecuteAsync(async () =>
+                {
+                    await using var transaction = await context.Database.BeginTransactionAsync();
+                    await context.SaveChangesAsync();
+                    await transaction.CommitAsync();
+                });
+
             _logger.LogInformation("Batch successfully inserted");
         }
         catch (Exception ex)

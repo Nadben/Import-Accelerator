@@ -51,6 +51,7 @@ public class EntityModelGenerator : IIncrementalGenerator
                     context.AddSource($"{schema.ClassName}Generated.g.cs", SourceText.From(code, Encoding.UTF8));
                 }
 
+                if (!schemas.Any()) return;
                 var dbContextCode = DbContext.Generate(schemas);
                 context.AddSource("LandingImportContext.g.cs", SourceText.From(dbContextCode, Encoding.UTF8));
             }
