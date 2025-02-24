@@ -21,7 +21,9 @@ static class ProjectApiRootExtensions
         {
             if (exception.StatusCode == HttpStatusCode.Conflict)
             {
-                await projectApiRoot.ImportContainers().WithImportContainerKeyValue(containerName).Delete()
+                await projectApiRoot.ImportContainers()
+                    .WithImportContainerKeyValue(containerName)
+                    .Delete()
                     .ExecuteAsync();
                 
                 await projectApiRoot.EnsureContainerIsCreated(containerName, resourceType);
