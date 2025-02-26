@@ -32,6 +32,7 @@ public class LoadingWorker<T, TContext, TURequest>
 
     public async Task ExecuteAsync(CancellationToken stoppingToken)
     {
+        _logger.LogInformation("Starting loading worker...");
         try
         {
             // Fetch from context all obj where hash != previousHash
@@ -52,13 +53,20 @@ public class LoadingWorker<T, TContext, TURequest>
             
             // send over the wire to import api
             await _importApi.BatchInsert(requests, "container");
+            
+            _logger.LogInformation("setting previous hash to hash");
+            
+            query.OfType<TransformBase>()
+                .ToList()
+                .ForEach(entity => entity.PreviousHash = entity.Hash);
+            
+            _context.Set<T>().UpdateRange(query);
         }   
         catch (Exception e)
         {
-            Console.WriteLine(e);
+            _logger.LogError("Error in loading worder {EntityType}: {Message} \r\n Inner Exceptio: {InnerException}",
+                typeof(T).Name, e.Message, e.InnerException?.Message);
             throw;
         }
     }
 }
-
-public interface ILoadingWorker<T, T1, T2>;

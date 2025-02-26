@@ -29,18 +29,18 @@
     </ItemGroup>
 
     <ItemGroup>
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.json" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.csv" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.xml" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Price\*.txt" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.json" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.csv" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.xml" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Inventory\*.txt" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.json" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.csv" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.xml" />
-        <AdditionalFiles Include="D:\repos\Import-Accelerator\Data\Category\*.txt" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Price\*.json" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Price\*.csv" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Price\*.xml" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Price\*.txt" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Inventory\*.json" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Inventory\*.csv" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Inventory\*.xml" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Inventory\*.txt" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Category\*.json" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Category\*.csv" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Category\*.xml" />
+        <AdditionalFiles Include="D:\Import-Accelerator\Data\Category\*.txt" />
     </ItemGroup>
 
     <ItemGroup>

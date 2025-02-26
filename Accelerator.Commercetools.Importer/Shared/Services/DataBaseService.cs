@@ -10,7 +10,7 @@ namespace Accelerator.Commercetools.Importer.Shared.Services;
 
 public class DataBaseService<T, TContext> : IDataBaseService<T, TContext>
     where T : class, new()
-    where TContext : DbContext, new()
+    where TContext : DbContext
 {
     private readonly ILogger<DataBaseService<T, TContext>> _logger;
     private readonly IDbContextFactory<TContext> _contextFactory;
@@ -51,27 +51,19 @@ public class DataBaseService<T, TContext> : IDataBaseService<T, TContext>
     {
         using var scope = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         context.ChangeTracker.AutoDetectChangesEnabled = false;
-
+        
         try
         {
             await context.Set<T>().AddRangeAsync(entitiesToInsert);
-            await context.Database
-                .CreateExecutionStrategy()
-                .ExecuteAsync(async () =>
-                {
-                    await using var transaction = await context.Database.BeginTransactionAsync();
-                    await context.SaveChangesAsync();
-                    await transaction.CommitAsync();
-                });
-
+            await context.SaveChangesAsync();
             _logger.LogInformation("Batch successfully inserted");
         }
         catch (Exception ex)
         {
-           _logger.LogError("Error inserting batch: {ExMessage} {Newline}Inner Exception: {InnerException} ",
-               ex.Message,
-               Environment.NewLine,
-               ex.InnerException?.Message);
+            _logger.LogError("Error inserting batch: {ExMessage} {Newline}Inner Exception: {InnerException} ",
+                ex.Message,
+                Environment.NewLine,
+                ex.InnerException?.Message);
         }
     
         scope.Complete();

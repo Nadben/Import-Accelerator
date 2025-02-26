@@ -6,12 +6,12 @@ namespace Accelerator.Commercetools.Importer.Commercetools;
 
 public class ImportApi : IImportApi
 {
-    private ProjectApiRoot Client { get; set; }
+    private readonly ProjectApiRoot _client;
     private const int MaximumBatchLenght = 120_000;
 
     public ImportApi(ProjectApiRoot client)
     {
-        Client = client;
+        _client = client;
     }
 
     public async Task BatchInsert<T>(IList<T> importEntities, string container) =>
@@ -30,7 +30,7 @@ public class ImportApi : IImportApi
             var containerName = $"{container}-{number}";
             var tasks = categoryImportRequest
                 .Select(i =>
-                    Client
+                    _client
                         .EnsureContainerIsCreated(containerName, IImportResourceType.Category)
                         .Result
                         .Categories()
@@ -52,7 +52,7 @@ public class ImportApi : IImportApi
         {
             var containerName = $"{container}-{number}";
             var tasks = priceImportRequest.Select(i =>
-                Client.EnsureContainerIsCreated(containerName, IImportResourceType.Price)
+                _client.EnsureContainerIsCreated(containerName, IImportResourceType.Price)
                     .Result
                     .Prices()
                     .ImportContainers()

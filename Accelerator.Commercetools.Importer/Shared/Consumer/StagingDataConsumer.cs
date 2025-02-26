@@ -11,8 +11,8 @@ namespace Accelerator.Commercetools.Importer.Shared.Consumer;
 public class StagingDataConsumer<T, TContext, TU, TUContext> : IStagingDataService<T,TContext, TU, TUContext>, IService
         where T : class, new()
         where TU : class, new()
-        where TContext : DbContext, new()
-        where TUContext : DbContext, new()
+        where TContext : DbContext
+        where TUContext : DbContext
 {
     private readonly TUContext _stagingContext;
     private readonly TContext _landingContext;
@@ -46,11 +46,11 @@ public class StagingDataConsumer<T, TContext, TU, TUContext> : IStagingDataServi
         _logger.LogInformation("transforming entities of type : {Type}", typeof(T).Name);
         var mappedEntities = Transform().ToList();
 
-        _logger.LogInformation("setting previous hash to hash");
-        mappedEntities
-            .OfType<TransformBase>()
-            .ToList()
-            .ForEach(entity => entity.PreviousHash = entity.Hash);
+        // _logger.LogInformation("setting previous hash to hash");
+        // mappedEntities
+        //     .OfType<TransformBase>()
+        //     .ToList()
+        //     .ForEach(entity => entity.PreviousHash = entity.Hash);
         
         foreach (var mappedEntity in mappedEntities)
         {

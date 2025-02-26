@@ -69,14 +69,16 @@ public class WorkflowOrchestrator : BackgroundService
         }
 
         var typeGroupDictionary = new GroupedTypeDictionary()
-            .RegisterGroup("Landing", type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Landing.Generated") ?? false,
+            .RegisterGroup("Landing", 
+                type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Landing.Generated") ?? false,
                 allTypes,
                 ["Price", "Category"])
-            .RegisterGroup("Staging", type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
+            .RegisterGroup("Staging",
+                type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
                 allTypes,
                 ["Price", "Category"])
             .RegisterGroup("Loading", 
-                _ => true,
+                type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
                 allTypes,
                 ["Price", "Category"]);
         

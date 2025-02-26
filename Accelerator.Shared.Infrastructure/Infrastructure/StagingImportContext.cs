@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Accelerator.Shared.Infrastructure.Infrastructure;
 
-public class StagingImportContext : DbContext
+public class StagingImportContext(DbContextOptions<StagingImportContext> options) : DbContext(options)
 {
     public DbSet<CommercetoolsStandalonePriceImport> CommercetoolsStandalonePrice { get; set; }
     public DbSet<CommercetoolsCategoryImport> CommercetoolsCategoryImports { get; set; }

@@ -9,8 +9,8 @@ namespace Accelerator.Commercetools.Importer.GenericEtlPipeline;
 public sealed class StagingWorker<TEntity, TContext, TUEntity, TUContext> 
     where TEntity : class, new()
     where TUEntity : class, new()
-    where TContext : DbContext, new()
-    where TUContext : DbContext, new()
+    where TContext : DbContext
+    where TUContext : DbContext
 {
     private readonly ILogger<StagingWorker<TEntity, TContext, TUEntity, TUContext>> _logger;
     private readonly StagingDataConsumer<TEntity, TContext, TUEntity, TUContext> _stagingDataConsumer;
