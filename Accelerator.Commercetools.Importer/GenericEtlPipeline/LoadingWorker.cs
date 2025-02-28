@@ -52,7 +52,7 @@ public class LoadingWorker<T, TContext, TURequest>
                 .ToList();
             
             // send over the wire to import api
-            await _importApi.BatchInsert(requests, "container");
+            await _importApi.BatchInsert(requests);
             
             _logger.LogInformation("setting previous hash to hash");
             

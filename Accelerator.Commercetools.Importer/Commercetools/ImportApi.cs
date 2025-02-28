@@ -1,6 +1,8 @@
 ﻿using commercetools.Sdk.ImportApi.Client;
+using commercetools.Sdk.ImportApi.Models.Categories;
 using commercetools.Sdk.ImportApi.Models.Common;
 using commercetools.Sdk.ImportApi.Models.Importrequests;
+using commercetools.Sdk.ImportApi.Models.Prices;
 
 namespace Accelerator.Commercetools.Importer.Commercetools;
 
@@ -14,55 +16,58 @@ public class ImportApi : IImportApi
         _client = client;
     }
 
-    public async Task BatchInsert<T>(IList<T> importEntities, string container) =>
+    public async Task BatchInsert<T>(IList<T> importEntities) =>
         await (importEntities switch
         {
-            IList<ICategoryImportRequest> categories => BatchInsertCategories(categories, container),
-            IList<IPriceImportRequest> prices => BatchInsertPrice(prices, container),
+            IList<CategoryImport> categories => BatchInsertCategories(categories, "Category"),
+            IList<PriceImport> prices => BatchInsertPrice(prices, "Price"),
             _ => throw new ArgumentOutOfRangeException(nameof(importEntities), importEntities, null)
         });
 
-    public async Task BatchInsertCategories(IList<ICategoryImportRequest> categories, string container)
+    public async Task BatchInsertCategories(IList<CategoryImport> categories, string container)
     {
         var number = 0;
-        foreach (var categoryImportRequest in categories.Chunk(MaximumBatchLenght))
+        foreach (IList<ICategoryImport> categoryImportRequest in categories.Chunk(MaximumBatchLenght))
         {
             var containerName = $"{container}-{number}";
-            var tasks = categoryImportRequest
-                .Select(i =>
-                    _client
-                        .EnsureContainerIsCreated(containerName, IImportResourceType.Category)
-                        .Result
-                        .Categories()
-                        .ImportContainers()
-                        .WithImportContainerKeyValue(containerName)
-                        .Post(i)
-                        .ExecuteAsync()
-                );
+            var task = _client
+                    .EnsureContainerIsCreated(containerName, IImportResourceType.Category)
+                    .Result
+                    .Categories()
+                    .ImportContainers()
+                    .WithImportContainerKeyValue(containerName)
+                    .Post(new CategoryImportRequest
+                    {
+                        Resources = categoryImportRequest
+                    })
+                    .ExecuteAsync();
+
 
             number++;
-            await Task.WhenAll(tasks);
+            await task;
         }
     }
 
-    public async Task BatchInsertPrice(IList<IPriceImportRequest> prices, string container)
+    public async Task BatchInsertPrice(IList<PriceImport> prices, string container)
     {
         var number = 0;
-        foreach (var priceImportRequest in prices.Chunk(MaximumBatchLenght))
+        foreach (IList<IPriceImport> priceImportRequest in prices.Chunk(MaximumBatchLenght))
         {
             var containerName = $"{container}-{number}";
-            var tasks = priceImportRequest.Select(i =>
-                _client.EnsureContainerIsCreated(containerName, IImportResourceType.Price)
-                    .Result
-                    .Prices()
-                    .ImportContainers()
-                    .WithImportContainerKeyValue(container)
-                    .Post(i)
-                    .ExecuteAsync()
-            );
+            var task = _client
+                .EnsureContainerIsCreated(containerName, IImportResourceType.Price)
+                .Result
+                .Prices()
+                .ImportContainers()
+                .WithImportContainerKeyValue(container)
+                .Post(new PriceImportRequest
+                {
+                    Resources = priceImportRequest
+                })
+                .ExecuteAsync();
             
             number++;
-            await Task.WhenAll(tasks);
+            await task;
         }
     }
 }

@@ -3,6 +3,9 @@ using Accelerator.Commercetools.Importer.Shared.Extension;
 using Accelerator.Shared.Infrastructure.Entities.Landing.Generated;
 using Accelerator.Shared.Infrastructure.Entities.Staging;
 using commercetools.Sdk.Api.Models.Channels;
+using commercetools.Sdk.ImportApi.Models.Categories;
+using commercetools.Sdk.ImportApi.Models.Common;
+using commercetools.Sdk.ImportApi.Models.Inventories;
 using commercetools.Sdk.ImportApi.Models.StandalonePrices;
 using Mapster;
 using IMoneyType = commercetools.Sdk.ImportApi.Models.Common.IMoneyType;
@@ -10,13 +13,27 @@ using TypedMoney = commercetools.Sdk.ImportApi.Models.Common.TypedMoney;
 
 namespace Accelerator.Commercetools.Importer.Mapping;
 
+public class LocalizedString : Dictionary<string, string>, ILocalizedString
+{
+    public LocalizedString() { }
+
+    public LocalizedString(IDictionary<string, string> dictionary) : base(dictionary) { }
+}
+
 public class CommercetoolsMapper : IRegister
 {
     public void Register(TypeAdapterConfig config)
     {
+
+        config.NewConfig<Dictionary<string, string>, ILocalizedString>()
+            .MapWith(dict => new LocalizedString(dict));
+        
         config.NewConfig<Category_Group_Subgroup_Partterm_mappingGenerated, CommercetoolsCategoryImport>()
             .Map(i => i.Id, j => Guid.NewGuid())
-            .Map(i => i.Hash, j => j.GetObjectHashCode());
+            .Map(i => i.Hash, j => j.GetObjectHashCode())
+            .Map(i => i.Slug, j => j.Parttermid)
+            .Map(i => i.Description, j => j.Groupname)
+            .Map(i => i.Name, j => j.Subgroupname);
         
         config.NewConfig<Price_USIC_PRICE20240325152337ABGenerated, CommercetoolsStandalonePriceImport>()
             .Map(i => i.Id,  j => Guid.NewGuid())
@@ -30,14 +47,7 @@ public class CommercetoolsMapper : IRegister
             .Map(i => i.Sku, j => string.Concat(j.Mfg, "-", j.Part))
             .Map(i => i.QuantityOnStock, j => j.StockQty)
             .Map(i => i.SupplyChannel, j => $"inventory-pw-{j.LocationID}");
-        
-        // config.NewConfig<Price_USIC_PRICE20240325152337BCGenerated, CommercetoolsStandalonePriceImport>()
-        //     .Map(i => i.Id,  j => Guid.NewGuid())
-        //     .Map(i => i.Sku, j => string.Concat(j.Mfg, "-", j.Part))
-        //     .Map(i => i.Value, j => j.Price.ToString(CultureInfo.InvariantCulture))
-        //     .Map(i => i.Hash, j => j.GetObjectHashCode())
-        //     .Map(i => i.Channel, j => $"prices-pw-{j.Regionid}");
-        
+
         config.NewConfig<CommercetoolsStandalonePriceImport, StandalonePriceImport>()
             .Map(i => i.Sku, j => j.Sku)
             .Map(i => i.Value, j => new TypedMoney
@@ -50,6 +60,28 @@ public class CommercetoolsMapper : IRegister
             .Map(i => i.Channel, j => new ChannelReference
             {
                 Id = j.Channel
+            });
+
+        config.NewConfig<CommercetoolsInventoryImport, InventoryImport>()
+            .Map(i => i.Sku, j => j.Sku)
+            .Map(i => i.SupplyChannel, j => new ChannelReference
+            {
+                Id = j.SupplyChannel
+            })
+            .Map(i => i.QuantityOnStock, j => j.QuantityOnStock);
+        
+        config.NewConfig<CommercetoolsCategoryImport, CategoryImport>()
+            .Map(i => i.Slug , j => new LocalizedString
+            {
+                {"en-US", j.Slug}
+            })
+            .Map(i => i.Description, j => new LocalizedString
+            {
+                {"en-US", j.Description}
+            })
+            .Map(i => i.Name , j => new LocalizedString
+            {
+                {"en-US", j.Name}
             });
     }
 }
