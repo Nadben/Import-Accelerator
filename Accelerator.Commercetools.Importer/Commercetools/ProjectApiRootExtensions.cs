@@ -1,4 +1,5 @@
 ﻿using System.Net;
+using commercetools.Base.Client.Error;
 using commercetools.Sdk.ImportApi.Client;
 using commercetools.Sdk.ImportApi.Models.Common;
 using commercetools.Sdk.ImportApi.Models.Importcontainers;
@@ -17,9 +18,9 @@ static class ProjectApiRootExtensions
                 .Post(new ImportContainerDraft { ResourceType = resourceType, Key = containerName })
                 .ExecuteAsync();
         }
-        catch (HttpRequestException  exception)
+        catch (BadRequestException  exception)
         {
-            if (exception.StatusCode == HttpStatusCode.Conflict)
+            if (exception.StatusCode == (int)HttpStatusCode.BadRequest)
             {
                 await projectApiRoot.ImportContainers()
                     .WithImportContainerKeyValue(containerName)

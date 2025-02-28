@@ -72,15 +72,15 @@ public class WorkflowOrchestrator : BackgroundService
             .RegisterGroup("Landing", 
                 type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Landing.Generated") ?? false,
                 allTypes,
-                ["Price", "Category"])
+                ["Price"])
             .RegisterGroup("Staging",
                 type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
                 allTypes,
-                ["Price", "Category"])
+                ["Price"])
             .RegisterGroup("Loading", 
                 type => type.Namespace?.Contains("Accelerator.Shared.Infrastructure.Entities.Staging") ?? false,
                 allTypes,
-                ["Price", "Category"]);
+                ["Price"]);
         
         var workerGroups = typeGroupDictionary.Categories
             .Select(category => WorkerGroup.Create(

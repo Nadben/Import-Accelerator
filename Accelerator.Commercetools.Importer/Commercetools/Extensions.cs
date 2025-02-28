@@ -24,7 +24,7 @@ public static class Extensions
                     HttpStatusCode.BadGateway or
                     HttpStatusCode.ServiceUnavailable or
                     HttpStatusCode.RequestTimeout or
-                    HttpStatusCode.GatewayTimeout
+                    HttpStatusCode.GatewayTimeout 
                 })
             });
 
@@ -47,7 +47,7 @@ public static class Extensions
     public static IServiceCollection AddCommercetools(this IServiceCollection services, IConfiguration configuration)
     {
         services
-            .UseCommercetoolsImportApi(configuration, "AcceleratorConfiguration:CommercetoolsConfig")
+            .UseCommercetoolsImportApi(configuration, "AcceleratorConfiguration:CommercetoolsImportConfig")
             .AddResilienceHandler("CommercetoolsApiResiliencePipeline", CommercetoolsApiConfiguration());
         //
         // services

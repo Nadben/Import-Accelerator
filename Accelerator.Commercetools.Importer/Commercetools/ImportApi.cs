@@ -9,7 +9,8 @@ namespace Accelerator.Commercetools.Importer.Commercetools;
 public class ImportApi : IImportApi
 {
     private readonly ProjectApiRoot _client;
-    private const int MaximumBatchLenght = 120_000;
+    private const int MaximumImportLenght = 220_000;
+    private const int MaximumBatchLenght = 20;
 
     public ImportApi(ProjectApiRoot client)
     {
@@ -27,10 +28,12 @@ public class ImportApi : IImportApi
     public async Task BatchInsertCategories(IList<CategoryImport> categories, string container)
     {
         var number = 0;
-        foreach (IList<ICategoryImport> categoryImportRequest in categories.Chunk(MaximumBatchLenght))
+        foreach (IList<ICategoryImport> categoryImportRequest in categories.Chunk(MaximumImportLenght))
         {
             var containerName = $"{container}-{number}";
-            var task = _client
+            foreach (var categoryImport in categoryImportRequest.Chunk(MaximumBatchLenght))
+            {
+                await _client
                     .EnsureContainerIsCreated(containerName, IImportResourceType.Category)
                     .Result
                     .Categories()
@@ -38,36 +41,37 @@ public class ImportApi : IImportApi
                     .WithImportContainerKeyValue(containerName)
                     .Post(new CategoryImportRequest
                     {
-                        Resources = categoryImportRequest
+                        Resources = categoryImport
                     })
                     .ExecuteAsync();
-
-
+            }
+            
             number++;
-            await task;
         }
     }
 
     public async Task BatchInsertPrice(IList<PriceImport> prices, string container)
     {
         var number = 0;
-        foreach (IList<IPriceImport> priceImportRequest in prices.Chunk(MaximumBatchLenght))
+        foreach (IList<IPriceImport> priceImportRequest in prices.Chunk(MaximumImportLenght))
         {
             var containerName = $"{container}-{number}";
-            var task = _client
-                .EnsureContainerIsCreated(containerName, IImportResourceType.Price)
-                .Result
-                .Prices()
-                .ImportContainers()
-                .WithImportContainerKeyValue(container)
-                .Post(new PriceImportRequest
-                {
-                    Resources = priceImportRequest
-                })
-                .ExecuteAsync();
+            foreach (var priceImport in priceImportRequest.Chunk(MaximumBatchLenght))
+            {
+                await _client
+                    .EnsureContainerIsCreated(containerName, IImportResourceType.Price)
+                    .Result
+                    .Prices()
+                    .ImportContainers()
+                    .WithImportContainerKeyValue(container)
+                    .Post(new PriceImportRequest
+                    {
+                        Resources = priceImportRequest
+                    })
+                    .ExecuteAsync();
+            }
             
             number++;
-            await task;
         }
     }
 }
