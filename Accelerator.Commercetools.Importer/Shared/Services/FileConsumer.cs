@@ -112,7 +112,8 @@ public class FileConsumer<T> : IFileConsumer<T>
                     _fileHeaders = line.Split(fileData.Separator).Select(s => s.ToLowerInvariant()
                             .Replace("-", string.Empty)
                             .Replace("_", string.Empty)
-                            .Replace(" ", string.Empty))
+                            .Replace(" ", string.Empty)
+                            .ReplaceLineEndings(string.Empty))
                         .ToList()
                         .AsReadOnly();
                     continue;
