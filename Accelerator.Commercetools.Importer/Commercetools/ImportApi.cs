@@ -1,68 +1,74 @@
 ﻿using commercetools.Sdk.ImportApi.Client;
 using commercetools.Sdk.ImportApi.Models.Categories;
-using commercetools.Sdk.ImportApi.Models.Common;
 using commercetools.Sdk.ImportApi.Models.Importrequests;
-using commercetools.Sdk.ImportApi.Models.Prices;
 using commercetools.Sdk.ImportApi.Models.StandalonePrices;
+using commercetools.Sdk.ImportApi.Models.Common;
+using commercetools.Sdk.ImportApi.Models.Inventories;
 
 namespace Accelerator.Commercetools.Importer.Commercetools;
 
 public class ImportApi : IImportApi
 {
     private readonly ProjectApiRoot _client;
-    private const int MaximumImportLenght = 220_000;
-    private const int MaximumBatchLenght = 20;
+    private const int MaximumImportLength = 220_000;
+    private const int MaximumBatchLength = 20;
 
     public ImportApi(ProjectApiRoot client)
     {
         _client = client;
     }
 
-    public async Task BatchInsert<T>(IList<T> importEntities) =>
-        await (importEntities switch
-        {
-            IList<CategoryImport> categories => BatchInsertCategories(categories, "Category"),
-            IList<StandalonePriceImport> prices => BatchInsertStandalonePrice(prices, "Price"),
-            _ => throw new ArgumentOutOfRangeException(nameof(importEntities), importEntities, null)
-        });
-
-    public async Task BatchInsertCategories(IList<CategoryImport> categories, string container)
+    public async Task BatchInsert<T>(IList<T> importEntities) where T : IImportResource
     {
-        var number = 0;
-        foreach (IList<ICategoryImport> categoryImportRequest in categories.Chunk(MaximumImportLenght))
+        switch (importEntities)
         {
-            var containerName = $"{container}-{number}";
-            await _client.EnsureContainerIsCreated(containerName, IImportResourceType.Category);
+            case IList<IInventoryImport> inventories:
+                await ProcessBatchInsert(inventories,
+                    Constants.Container.Prefix.Inventory,
+                    IImportResourceType.Inventory,
+                    (container, batch) =>
+                        _client.Inventories()
+                            .ImportContainers()
+                            .WithImportContainerKeyValue(container)
+                            .Post(new InventoryImportRequest { Resources = batch })
+                            .ExecuteAsync());
+                break;
             
-            var tasks = categoryImportRequest.Chunk(MaximumBatchLenght)
-                .Select(categoryImport => _client.Categories()
-                    .ImportContainers()
-                    .WithImportContainerKeyValue(containerName)
-                    .Post(new CategoryImportRequest { Resources = categoryImport })
-                    .ExecuteAsync())
-                .Cast<Task>()
-                .ToList();
-
-            await Task.WhenAll(tasks);
-            number++;
+            case IList<ICategoryImport> categories:
+                await ProcessBatchInsert(categories, Constants.Container.Prefix.Category, IImportResourceType.Category,
+                    (container, batch) =>
+                        _client.Categories()
+                            .ImportContainers()
+                            .WithImportContainerKeyValue(container)
+                            .Post(new CategoryImportRequest { Resources = batch })
+                            .ExecuteAsync());
+                break;
+            
+            case IList<IStandalonePriceImport> prices:
+                await ProcessBatchInsert(prices, Constants.Container.Prefix.Price, IImportResourceType.Price,
+                    (container, batch) =>
+                        _client.StandalonePrices()
+                            .ImportContainers()
+                            .WithImportContainerKeyValue(container)
+                            .Post(new StandalonePriceImportRequest { Resources = batch })
+                            .ExecuteAsync());
+                break;
+            
+            default:
+                throw new ArgumentOutOfRangeException(nameof(importEntities), importEntities, null);
         }
     }
 
-    public async Task BatchInsertStandalonePrice(IList<StandalonePriceImport> prices, string container)
+    private async Task ProcessBatchInsert<T>(IList<T> importEntities, string containerPrefix, IImportResourceType resourceType, Func<string, IList<T>, Task> importAction) where T : IImportResource
     {
-        var number = 0;
-        foreach (IList<IStandalonePriceImport> priceImportRequest in prices.Chunk(MaximumImportLenght))
+        int number = 0;
+        foreach (var chunk in importEntities.Chunk(MaximumImportLength))
         {
-            var containerName = $"{container}-{number}";
-            await _client.EnsureContainerIsCreated(containerName, IImportResourceType.Price);
+            var containerName = $"{containerPrefix}-{number}";
+            await _client.EnsureContainerIsCreated(containerName, resourceType);
 
-            var tasks = priceImportRequest.Chunk(MaximumBatchLenght)
-                .Select(priceImport => _client.StandalonePrices()
-                    .ImportContainers()
-                    .WithImportContainerKeyValue(containerName)
-                    .Post(new StandalonePriceImportRequest { Resources = priceImport })
-                    .ExecuteAsync())
-                .Cast<Task>()
+            var tasks = chunk.Chunk(MaximumBatchLength)
+                .Select(batch => importAction(containerName, batch))
                 .ToList();
 
             await Task.WhenAll(tasks);

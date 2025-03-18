@@ -1,7 +1,7 @@
-﻿using System.Collections;
-using Accelerator.Commercetools.Importer.Commercetools;
+﻿using Accelerator.Commercetools.Importer.Commercetools;
 using Accelerator.Commercetools.Importer.Workflow;
 using Accelerator.Shared.Infrastructure.Entities.Staging;
+using commercetools.Sdk.ImportApi.Models.Common;
 using MapsterMapper;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -12,7 +12,7 @@ namespace Accelerator.Commercetools.Importer.GenericEtlPipeline;
 public class LoadingWorker<T, TContext, TURequest>
     where T : class
     where TContext : DbContext 
-    where TURequest : class, new()
+    where TURequest : IImportResource
 {
     private readonly ILogger<LoadingWorker<T, TContext, TURequest>> _logger;
     private readonly IImportApi _importApi;

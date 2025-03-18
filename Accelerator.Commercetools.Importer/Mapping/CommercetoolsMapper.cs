@@ -3,10 +3,8 @@ using System.Text.RegularExpressions;
 using Accelerator.Commercetools.Importer.Shared.Extension;
 using Accelerator.Shared.Infrastructure.Entities.Landing.Generated;
 using Accelerator.Shared.Infrastructure.Entities.Staging;
-using commercetools.Sdk.Api.Models.Channels;
 using commercetools.Sdk.ImportApi.Models.Categories;
 using commercetools.Sdk.ImportApi.Models.Common;
-using commercetools.Sdk.ImportApi.Models.Customfields;
 using commercetools.Sdk.ImportApi.Models.Inventories;
 using commercetools.Sdk.ImportApi.Models.StandalonePrices;
 using Mapster;
@@ -86,12 +84,13 @@ public partial class CommercetoolsMapper : IRegister
             .Ignore(i => i.Custom);
 
         config.NewConfig<CommercetoolsInventoryImport, InventoryImport>()
+            .Map(i => i.Key, j => KeyRegexRule().Replace(j.Sku, string.Empty))
             .Map(i => i.Sku, j => j.Sku)
-            .Map(i => i.SupplyChannel, j => new ChannelReference
+            .Map(i => i.SupplyChannel, j => new ChannelKeyReference
             {
-                Id = j.SupplyChannel
+                Key = j.SupplyChannel
             })
-            .Map(i => i.QuantityOnStock, j => j.QuantityOnStock);
+            .Map(i => i.QuantityOnStock, j => (long)j.QuantityOnStock);
         
         config.NewConfig<CommercetoolsCategoryImport, CategoryImport>()
             .Map(i => i.Slug , j => new LocalizedString
